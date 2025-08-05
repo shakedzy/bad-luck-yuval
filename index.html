@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bad Luck Yuval - Avoid the Money!</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💰</text></svg>">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4, #45b7d1);
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            min-height: 100vh;
+        }
+
+        #gameContainer {
+            position: relative;
+            width: 1400px;
+            height: 1000px;
+            background: linear-gradient(to bottom, #87CEEB 0%, #98FB98 100%);
+            border: 5px solid #333;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            max-width: 95vw;
+            max-height: 70vh;
+        }
+
+        #yuval {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: left 0.05s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #yuvalHead {
+            width: 100px;
+            height: 100px;
+            background-image: url('./the-yuval.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            margin-bottom: 5px;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+            border-radius: 50px;
+            overflow: hidden;
+        }
+
+        #yuvalTorso {
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+        }
+
+        #yuvalLeftArm {
+            width: 18px;
+            height: var(--arm-height, 60px);
+            background: linear-gradient(135deg, #FFB6C1, #FF69B4);
+            border-radius: 9px;
+            border: 2px solid #333;
+            position: absolute;
+            left: -12px;
+            top: 5px;
+            transform: rotate(25deg);
+            transform-origin: top right;
+            transition: height 0.5s ease;
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        #yuvalLeftArm::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: var(--hand-size, 14px);
+            height: var(--hand-size, 14px);
+            background: linear-gradient(135deg, #FFB6C1, #FF69B4);
+            border-radius: 50%;
+            border: 2px solid #333;
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+            transition: width 0.5s ease, height 0.5s ease;
+        }
+
+        #yuvalRightArm {
+            width: 18px;
+            height: var(--arm-height, 60px);
+            background: linear-gradient(135deg, #FFB6C1, #FF69B4);
+            border-radius: 9px;
+            border: 2px solid #333;
+            position: absolute;
+            right: -12px;
+            top: 5px;
+            transform: rotate(-25deg);
+            transform-origin: top left;
+            transition: height 0.5s ease;
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        #yuvalRightArm::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: var(--hand-size, 14px);
+            height: var(--hand-size, 14px);
+            background: linear-gradient(135deg, #FFB6C1, #FF69B4);
+            border-radius: 50%;
+            border: 2px solid #333;
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+            transition: width 0.5s ease, height 0.5s ease;
+        }
+
+        #yuvalBody {
+            width: 50px;
+            height: var(--body-height, 80px);
+            background: linear-gradient(135deg, #4169E1, #6495ED);
+            border-radius: 25px;
+            border: 2px solid #333;
+            transition: height 0.5s ease;
+            box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 2;
+        }
+
+        #yuvalLegs {
+            display: flex;
+            justify-content: space-between;
+            width: 60px;
+            margin-top: 5px;
+        }
+
+        .leg-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .leg {
+            width: 20px;
+            height: var(--leg-height, 40px);
+            background: linear-gradient(135deg, #333, #555);
+            border-radius: 10px;
+            border: 2px solid #222;
+            box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
+            transition: height 0.5s ease;
+        }
+
+        .foot {
+            width: 25px;
+            height: 15px;
+            background: linear-gradient(135deg, #444, #666);
+            border-radius: 0 0 12px 12px;
+            border: 2px solid #222;
+            margin-top: -2px;
+        }
+
+        .money {
+            position: absolute;
+            font-size: 70px;
+            animation: fall linear;
+            user-select: none;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            cursor: default;
+        }
+
+        .small-money {
+            font-size: 65px;
+        }
+
+        .medium-money {
+            font-size: 85px;
+        }
+
+        .large-money {
+            font-size: 110px;
+        }
+
+        @keyframes fall {
+            from { top: -80px; }
+            to { top: 1080px; }
+        }
+
+        #ui {
+            color: white;
+            text-align: center;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        #score {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        #timer {
+            font-size: 20px;
+            margin: 10px 0;
+        }
+
+        #gameOver {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            display: none;
+            z-index: 100;
+        }
+
+        #startButton {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        #startButton:hover {
+            background: #ff5252;
+            transform: scale(1.05);
+        }
+
+        .explosion {
+            position: absolute;
+            color: red;
+            font-size: 40px;
+            font-weight: bold;
+            animation: explode 0.5s ease-out;
+            pointer-events: none;
+        }
+
+        @keyframes explode {
+            0% { transform: scale(0.5); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+
+        #instructions {
+            background: rgba(255,255,255,0.9);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px;
+            max-width: 600px;
+            text-align: center;
+            color: #333;
+        }
+
+
+
+        #status {
+            font-size: 18px;
+            margin: 10px 0;
+            min-height: 25px;
+        }
+
+        .money-hit {
+            animation: moneyHit 0.3s ease-out;
+        }
+
+        @keyframes moneyHit {
+            0% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.5) rotate(180deg); color: red; }
+            100% { transform: scale(0) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div id="instructions">
+        <h1>🍀 Bad Luck Yuval 🍀</h1>
+        <p><strong>Oh no! MASSIVE money is raining from the sky and Yuval HATES money!</strong></p>
+        <p>Help Yuval avoid all the falling cash for 1 minute. Use ← → arrow keys or A/D to move.</p>
+        <p>🎯 Miss more money = Higher score! 💰 Getting hit by money = Bad luck!</p>
+        <p>⚠️ WARNING: Money piles worth THOUSANDS! Multiple pieces fall at once! Standing still = CERTAIN DOOM!</p>
+    </div>
+
+    <div id="ui">
+        <div id="score">Money Avoided: $0K</div>
+        <div id="timer">Time: 1:00</div>
+        <div id="status">Press START to begin the money mayhem!</div>
+    </div>
+
+    <div id="gameContainer">
+        <div id="yuval">
+            <div id="yuvalHead"></div>
+            <div id="yuvalTorso">
+                <div id="yuvalLeftArm"></div>
+                <div id="yuvalBody"></div>
+                <div id="yuvalRightArm"></div>
+            </div>
+            <div id="yuvalLegs">
+                <div class="leg-container">
+                    <div class="leg"></div>
+                    <div class="foot"></div>
+                </div>
+                <div class="leg-container">
+                    <div class="leg"></div>
+                    <div class="foot"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button id="startButton" onclick="startGame()">START GAME</button>
+
+    <div id="gameOver">
+        <h2>🎮 Game Over! 🎮</h2>
+        <p id="finalScore"></p>
+        <p id="finalMessage"></p>
+        <button id="startButton" onclick="restartGame()">Play Again</button>
+    </div>
+
+    <script>
+        let gameRunning = false;
+        let score = 0;
+        let timeLeft = 60; // 1 minute in seconds
+        let yuval = document.getElementById('yuval');
+        let gameContainer = document.getElementById('gameContainer');
+        let yuvalPosition = 50; // percentage from left
+        let moneyArray = [];
+        let gameTimer;
+        let spawnTimer;
+        let growthTimer;
+        let growthLevel = 0;
+        let spawnRate = 400; // milliseconds between money spawns
+        let fallSpeed = 6; // pixels per frame
+
+        // Sound effects using Web Audio API
+        function playSound(frequency, duration, type = 'sine') {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+                oscillator.type = type;
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration);
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
+
+        function playHitSound() {
+            // Low ominous sound for getting hit by money
+            playSound(150, 0.3, 'square');
+            setTimeout(() => playSound(100, 0.2, 'sawtooth'), 100);
+        }
+
+        function playAvoidSound() {
+            // Happy chirp for avoiding money
+            playSound(800, 0.1, 'sine');
+        }
+
+        function playGrowSound() {
+            // Growing sound
+            playSound(300, 0.1, 'triangle');
+            setTimeout(() => playSound(400, 0.1, 'triangle'), 100);
+            setTimeout(() => playSound(500, 0.1, 'triangle'), 200);
+        }
+
+        function playGameOverSound() {
+            // Game over jingle
+            playSound(400, 0.2, 'sine');
+            setTimeout(() => playSound(350, 0.2, 'sine'), 200);
+            setTimeout(() => playSound(300, 0.4, 'sine'), 400);
+        }
+
+        function playStartSound() {
+            // Start game sound
+            playSound(500, 0.1, 'sine');
+            setTimeout(() => playSound(600, 0.1, 'sine'), 100);
+            setTimeout(() => playSound(700, 0.2, 'sine'), 200);
+        }
+
+        // Money types with different values and emojis
+        const moneyTypes = [
+            { emoji: '💵', value: 1000, size: 'small-money', name: '$1K Bill' },
+            { emoji: '💴', value: 5000, size: 'small-money', name: '$5K Bill' },
+            { emoji: '💶', value: 10000, size: 'medium-money', name: '$10K Bill' },
+            { emoji: '💷', value: 25000, size: 'medium-money', name: '$25K Bill' },
+            { emoji: '💰', value: 50000, size: 'large-money', name: '$50K Money Bag' },
+            { emoji: '🏆', value: 100000, size: 'large-money', name: '$100K Jackpot!' }
+        ];
+
+        // Funny status messages
+        const statusMessages = [
+            "Yuval is suspicious of all this free money! 🤔",
+            "Why is money falling from the sky?! 😱",
+            "Yuval: 'This seems like a trap!' 🪤",
+            "Avoiding capitalism, one dollar at a time! ✊",
+            "Yuval: 'I didn't ask for this wealth!' 💸",
+            "Money rain = Yuval's worst nightmare! ☔",
+            "Yuval practicing his anti-money dance! 💃"
+        ];
+
+        function updateStatus() {
+            if (gameRunning) {
+                document.getElementById('status').textContent = 
+                    statusMessages[Math.floor(Math.random() * statusMessages.length)];
+            }
+        }
+
+        // Keyboard controls
+        document.addEventListener('keydown', function(e) {
+            if (!gameRunning) return;
+            
+            if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+                moveYuval(-1);
+            } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+                moveYuval(1);
+            }
+        });
+
+        function moveYuval(direction) {
+            yuvalPosition += direction * 6;
+            yuvalPosition = Math.max(20, Math.min(80, yuvalPosition));
+            yuval.style.left = yuvalPosition + '%';
+        }
+
+        function spawnMoney() {
+            if (!gameRunning) return;
+
+            // Randomly spawn 1-3 pieces of money at once for extra difficulty
+            const spawnCount = Math.random() < 0.6 ? 1 : (Math.random() < 0.8 ? 2 : 3);
+            
+            for (let i = 0; i < spawnCount; i++) {
+                const money = document.createElement('div');
+                const moneyType = moneyTypes[Math.floor(Math.random() * moneyTypes.length)];
+                
+                money.className = `money ${moneyType.size}`;
+                money.textContent = moneyType.emoji;
+                money.dataset.value = moneyType.value;
+                money.dataset.name = moneyType.name;
+                
+                // Random horizontal position with spacing for multiple spawns
+                let leftPosition = Math.random() * (gameContainer.offsetWidth - 50);
+                if (spawnCount > 1) {
+                    leftPosition = (i / (spawnCount - 1)) * (gameContainer.offsetWidth - 100) + 50;
+                    leftPosition += (Math.random() - 0.5) * 100; // Add some randomness
+                }
+                money.style.left = Math.max(0, Math.min(gameContainer.offsetWidth - 50, leftPosition)) + 'px';
+                money.style.animationDuration = (8000 / fallSpeed) + 'ms';
+                
+                gameContainer.appendChild(money);
+                moneyArray.push(money);
+
+                // Remove money when animation ends
+                money.addEventListener('animationend', function() {
+                    if (money.parentNode) {
+                        money.parentNode.removeChild(money);
+                        moneyArray = moneyArray.filter(m => m !== money);
+                        // Score for avoiding money!
+                        score += parseInt(money.dataset.value);
+                        updateScore();
+                        playAvoidSound();
+                    }
+                });
+            }
+        }
+
+        function checkCollisions() {
+            if (!gameRunning) return;
+
+            const yuvalRect = yuval.getBoundingClientRect();
+            const containerRect = gameContainer.getBoundingClientRect();
+
+            moneyArray.forEach(money => {
+                const moneyRect = money.getBoundingClientRect();
+                
+                // Check if money hits Yuval
+                if (moneyRect.left < yuvalRect.right &&
+                    moneyRect.right > yuvalRect.left &&
+                    moneyRect.top < yuvalRect.bottom &&
+                    moneyRect.bottom > yuvalRect.top) {
+                    
+                    // Collision detected!
+                    hitByMoney(money);
+                }
+            });
+        }
+
+        function hitByMoney(money) {
+            // Create explosion effect
+            const explosion = document.createElement('div');
+            explosion.className = 'explosion';
+            explosion.textContent = '💥 OH NO!';
+            explosion.style.left = money.style.left;
+            explosion.style.top = money.offsetTop + 'px';
+            gameContainer.appendChild(explosion);
+
+            // Add hit animation to money
+            money.classList.add('money-hit');
+            
+            // Update status
+            document.getElementById('status').textContent = 
+                `Yuval got hit by ${money.dataset.name}! Bad luck! 😢`;
+
+            // Play hit sound
+            playHitSound();
+
+            // Remove explosion after animation
+            setTimeout(() => {
+                if (explosion.parentNode) {
+                    explosion.parentNode.removeChild(explosion);
+                }
+            }, 500);
+
+            // Remove money
+            setTimeout(() => {
+                if (money.parentNode) {
+                    money.parentNode.removeChild(money);
+                    moneyArray = moneyArray.filter(m => m !== money);
+                }
+            }, 300);
+
+            // Reduce score (penalty for getting hit)
+            score = Math.max(0, score - parseInt(money.dataset.value) * 2);
+            updateScore();
+        }
+
+        function updateScore() {
+            // Format score with K for thousands
+            let formattedScore = score;
+            if (score >= 1000000) {
+                formattedScore = (score / 1000000).toFixed(1) + 'M';
+            } else if (score >= 1000) {
+                formattedScore = (score / 1000).toFixed(0) + 'K';
+            }
+            document.getElementById('score').textContent = `Money Avoided: $${formattedScore}`;
+        }
+
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timer').textContent = 
+                `Time: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeLeft <= 0) {
+                endGame();
+                return;
+            }
+            
+            timeLeft--;
+            
+            // Increase difficulty over time
+            if (timeLeft % 5 === 0) {
+                spawnRate = Math.max(150, spawnRate - 50);
+                fallSpeed += 1.2;
+                clearInterval(spawnTimer);
+                spawnTimer = setInterval(spawnMoney, spawnRate);
+            }
+        }
+
+        function makeYuvalTall() {
+            if (gameRunning && growthLevel < 6) { // Maximum 6 growth levels in 60 seconds
+                growthLevel++;
+                
+                // Apply progressive growth
+                const bodyHeight = 80 + (growthLevel * 20); // 80, 100, 120, 140, 160, 180
+                const armHeight = 60 + (growthLevel * 15);  // 60, 75, 90, 105, 120, 135
+                const legHeight = 40 + (growthLevel * 10);  // 40, 50, 60, 70, 80, 90
+                const handSize = 14 + (growthLevel * 3);    // 14, 17, 20, 23, 26, 29
+                
+                // Update CSS custom properties for dynamic sizing
+                yuval.style.setProperty('--body-height', bodyHeight + 'px');
+                yuval.style.setProperty('--arm-height', armHeight + 'px');
+                yuval.style.setProperty('--leg-height', legHeight + 'px');
+                yuval.style.setProperty('--hand-size', handSize + 'px');
+                
+                document.getElementById('status').textContent = 
+                    `Yuval grew again! Level ${growthLevel} - Even bigger target! 📏`;
+                playGrowSound();
+            }
+        }
+
+        function startGame() {
+            gameRunning = true;
+            score = 0;
+            timeLeft = 60;
+            yuvalPosition = 50;
+            growthLevel = 0;
+            spawnRate = 400;
+            fallSpeed = 6;
+            
+            // Reset Yuval
+            yuval.style.left = '50%';
+            yuval.style.setProperty('--body-height', '80px');
+            yuval.style.setProperty('--arm-height', '60px');
+            yuval.style.setProperty('--leg-height', '40px');
+            yuval.style.setProperty('--hand-size', '14px');
+            
+            // Clear any existing money
+            moneyArray.forEach(money => {
+                if (money.parentNode) {
+                    money.parentNode.removeChild(money);
+                }
+            });
+            moneyArray = [];
+            
+            // Update UI
+            updateScore();
+            updateTimer();
+            updateStatus();
+            
+            // Hide start button, instructions, and game over screen
+            document.getElementById('startButton').style.display = 'none';
+            document.getElementById('instructions').style.display = 'none';
+            document.getElementById('gameOver').style.display = 'none';
+            
+            // Play start sound
+            playStartSound();
+            
+            // Start timers
+            gameTimer = setInterval(updateTimer, 1000);
+            spawnTimer = setInterval(spawnMoney, spawnRate);
+            growthTimer = setInterval(makeYuvalTall, 10000); // Grow every 10 seconds
+            
+            // Start collision detection
+            const collisionInterval = setInterval(() => {
+                if (gameRunning) {
+                    checkCollisions();
+                } else {
+                    clearInterval(collisionInterval);
+                }
+            }, 50);
+
+            // Start status updates
+            const statusInterval = setInterval(() => {
+                if (gameRunning) {
+                    updateStatus();
+                } else {
+                    clearInterval(statusInterval);
+                }
+            }, 3000);
+        }
+
+        function endGame() {
+            gameRunning = false;
+            
+            // Clear timers
+            clearInterval(gameTimer);
+            clearInterval(spawnTimer);
+            clearInterval(growthTimer);
+            
+            // Show game over screen
+            let formattedFinalScore = score;
+            if (score >= 1000000) {
+                formattedFinalScore = (score / 1000000).toFixed(1) + 'M';
+            } else if (score >= 1000) {
+                formattedFinalScore = (score / 1000).toFixed(0) + 'K';
+            }
+            document.getElementById('finalScore').textContent = `Final Score: $${formattedFinalScore} avoided!`;
+            
+            let message = '';
+            if (score >= 500000) {
+                message = "🏆 Master Money Avoider! Yuval would be proud! 🎉";
+            } else if (score >= 300000) {
+                message = "😎 Nice job! Yuval successfully avoided capitalism! 💪";
+            } else if (score >= 150000) {
+                message = "😊 Not bad! Yuval dodged some serious cash! 🏃‍♂️";
+            } else if (score >= 50000) {
+                message = "😅 Yuval got a bit wealthy, but not too bad! 💸";
+            } else {
+                message = "😂 Yuval became accidentally rich! Better luck next time! 🤑";
+            }
+            
+            document.getElementById('finalMessage').textContent = message;
+            document.getElementById('gameOver').style.display = 'block';
+            document.getElementById('status').textContent = "Game Over! How did Yuval do?";
+            
+            // Play game over sound
+            playGameOverSound();
+            
+            // Show the start button for play again outside the modal
+            document.getElementById('startButton').style.display = 'none';
+        }
+
+        function restartGame() {
+            document.getElementById('instructions').style.display = 'block';
+            document.getElementById('startButton').style.display = 'inline-block';
+            document.getElementById('gameOver').style.display = 'none';
+            document.getElementById('status').textContent = "Press START to begin the money mayhem!";
+        }
+
+        // Initialize
+        updateScore();
+        updateStatus();
+    </script>
+</body>
+</html>
