@@ -2,7 +2,7 @@
 
 A hilarious web-based game where Yuval desperately tries to avoid falling money from the sky!
 
-[![Static Badge](https://img.shields.io/badge/%F0%9F%92%B020Click%20to%20play%20online!-green?style=for-the-badge)](https://shakedzy.xyz/bad-luck-yuval)
+[![Static Badge](https://img.shields.io/badge/%F0%9F%92%B0%20Click%20to%20play%20online!-green?style=for-the-badge)](https://shakedzy.xyz/bad-luck-yuval)
 
 
 ## 🎮 Game Concept
